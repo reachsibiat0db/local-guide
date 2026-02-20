@@ -21,7 +21,7 @@ export default function Categories() {
             <Link
               key={cat}
               href={`/category/${cat}`}
-              className="bg-white border border-gray-100 shadow-sm rounded-2xl p-4 capitalize text-center"
+              className="bg-white border border-gray-100 shadow-sm rounded-2xl p-4 capitalize text-center text-gray-900 font-semibold"
             >
               {cat}
             </Link>

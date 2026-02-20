@@ -53,7 +53,7 @@ export default function Home() {
                   key={i}
                   className="bg-white rounded-xl p-3 shadow-sm text-sm"
                 >
-                  <div className="font-medium">{item.name}</div>
+                  <div className="font-semibold text-black">{item.name}</div>
                   <div className="text-gray-400 text-xs">
                     {item.category}
                   </div>
