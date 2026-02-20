@@ -1,22 +1,35 @@
 "use client";
 
 import PageHeader from "@/components/page-header";
+import { useEffect, useState } from "react";
+import { buildFormUrl } from "@/lib/form";
+
 
 export default function SubmitPage() {
+
+  const [formUrl, setFormUrl] = useState("");
+
+  useEffect(() => {
+    const area = localStorage.getItem("area") || "Kolathur";
+    const url = buildFormUrl({ area });
+    setFormUrl(url);
+  }, []);
+
   return (
-    <main className="min-h-screen bg-gray-50 pb-20">
+    <main className="min-h-screen bg-white pb-20">
       <div className="max-w-md mx-auto p-6">
         <PageHeader title="Suggest a Place" />
 
         <div className="bg-white rounded-2xl overflow-hidden shadow-sm">
-          <iframe
-            src="https://docs.google.com/forms/d/e/1FAIpQLSdPIAvFsaQeKHwAJWAC33xvvqW3mtoMaGRhfGeXf8MTsUpjvg/viewform?embedded=true"
-            width="100%"
-            height="650"
-            className="border-0"
-          >
+          {formUrl && (
+            <iframe
+              src={formUrl}
+              width="100%"
+              height="600"
+              className="border-0"
+            />
+          )}
             Loading…
-          </iframe>
         </div>
       </div>
     </main>

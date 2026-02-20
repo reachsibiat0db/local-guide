@@ -1,4 +1,11 @@
+"use client";
+import { useEffect, useState } from "react";
 import PageHeader from "@/components/page-header";
+import { DATA } from "@/lib/data";
+import { Listing } from "@/types/listing";
+import { useParams } from "next/navigation";
+import EmptyState from "@/components/empty-state";
+
 const data: Record<string, any[]> = {
   electricians: [
     {
@@ -30,22 +37,35 @@ const data: Record<string, any[]> = {
   ],
 };
 
-export default async function CategoryPage({ params }: any) {
-  const { slug } = await params; // ✅ NEW FIX
+export default function CategoryPage() {
+  const [area, setArea] = useState("kolathur");
+  useEffect(() => {
+    const saved = localStorage.getItem("area");
+    if (saved) setArea(saved);
+  }, []);
 
-  const items = data[slug] || [];
+  const params = useParams();
+  const slug = params.slug as string;
+  const items: Listing[] = DATA[area]?.[slug] || [];
 
   return (
-    <main className="min-h-screen bg-gray-50 pb-20">
+    <main className="min-h-screen bg-white pb-20">
       <div className="max-w-md mx-auto p-6">
         <PageHeader title={slug} />
-
-        {items.map((item, i) => (
-          <div key={i} className="mb-3 bg-white rounded-2xl shadow-sm p-4">
-            <h2 className="font-semibold">{item.name}</h2>
-            <p className="text-sm text-gray-500 mt-1">{item.note}</p>
-          </div>
-        ))}
+        
+          {items.length === 0 ? (
+            <EmptyState />
+          ) : (
+            items.map((item) => (
+              <div
+                key={item.name}
+                className="p-4 bg-white rounded-xl shadow-sm"
+              >
+                <h3 className="font-semibold">{item.name}</h3>
+                <p className="text-sm text-gray-500">{item.note}</p>
+              </div>
+            ))
+          )}
       </div>
     </main>
   );

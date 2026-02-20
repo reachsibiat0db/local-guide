@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-
+import ReportBug from "@/components/report-bug";
 import BottomNav from "@/components/bottom-nav";
 
 import { Geist, Geist_Mono } from "next/font/google";
@@ -33,9 +33,10 @@ export default function RootLayout({
         <meta name="color-scheme" content="light" />
         <link rel="manifest" href="/manifest.json" />
       </head>     
-      <body className="bg-white text-black">
+      <body className="bg-white text-gray-900 antialiased">
         {children}
         <BottomNav />
+        <ReportBug />
       </body>
     </html>
   );

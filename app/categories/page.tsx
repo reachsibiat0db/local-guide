@@ -7,11 +7,12 @@ const categories = [
   "salons",
   "electricians",
   "internet",
+  "supermarket",
 ];
 
 export default function Categories() {
   return (
-    <main className="min-h-screen bg-gray-50 pb-20">
+    <main className="min-h-screen bg-white pb-20">
       <div className="max-w-md mx-auto p-6">
         <PageHeader title="Categories" />
 

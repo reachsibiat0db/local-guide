@@ -15,7 +15,7 @@ export default function PageHeader({ title }: { title: string }) {
         ←
       </button>
 
-      <h1 className="text-lg font-semibold capitalize">{title}</h1>
+      <h1 className="text-lg font-semibold text-gray-900 capitalize">{title}</h1>
     </div>
   );
 }
