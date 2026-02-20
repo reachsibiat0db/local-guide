@@ -19,7 +19,7 @@ export const metadata: Metadata = {
   title: "Local Guide",
   description: "Trusted local recommendations",
   manifest: "/manifest.json",
-  themeColor: "#ffffff",
+  // themeColor: "#ffffff",
 };
 
 export const viewport = {

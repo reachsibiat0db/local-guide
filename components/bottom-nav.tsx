@@ -12,7 +12,7 @@ export default function BottomNav() {
     }`;
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 bg-white border-t shadow-sm">
+    <nav className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 shadow-[0_-2px_8px_rgba(0,0,0,0.04)]">
       <div className="max-w-md mx-auto flex justify-around py-2">
         <Link href="/" className={linkClass("/")}>
           <span>🏠</span>
