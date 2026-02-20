@@ -61,7 +61,7 @@ export default function CategoryPage() {
                 key={item.name}
                 className="p-4 bg-white rounded-xl shadow-sm"
               >
-                <h3 className="font-semibold">{item.name}</h3>
+                <h3 className="font-semibold text-black">{item.name}</h3>
                 <p className="text-sm text-gray-500">{item.note}</p>
               </div>
             ))

@@ -4,7 +4,7 @@ export const DATA: Record<
   string,
   Record<string, Listing[]>
 > = {
-  kolathur: {
+  Kolathur: {
     salons: [
       { name: "Green Trends", note: "Budget friendly" }
     ],
@@ -25,7 +25,7 @@ export const DATA: Record<
     ]
   },
 
-  ramapuram: {
+  Ramapuram: {
     salons: [
       { name: "Naturals", note: "Reliable chain" }
     ],
