@@ -15,11 +15,11 @@ export default function Home() {
 
   return (
     <main className="min-h-screen bg-white pb-20">
-      <div className="max-w-md mx-auto p-6">
+      <div className="max-w-md mx-auto px-4 pt-4 pb-6">
         {/* Header */}
         <AreaSelector />
 
-        <h1 className="text-2xl font-bold text-gray-900">
+        <h1 className="text-xl font-semibold text-gray-900">
           Local Guide
         </h1>
         <p className="text-gray-500 mt-1">

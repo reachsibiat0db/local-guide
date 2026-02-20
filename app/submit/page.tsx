@@ -17,7 +17,7 @@ export default function SubmitPage() {
 
   return (
     <main className="min-h-screen bg-white pb-20">
-      <div className="max-w-md mx-auto p-6">
+      <div className="max-w-md mx-auto px-4 pt-4 pb-6">
         <PageHeader title="Suggest a Place" />
 
         <div className="bg-white rounded-2xl overflow-hidden shadow-sm">

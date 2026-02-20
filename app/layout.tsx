@@ -35,7 +35,9 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head>
-        {/* <meta name="theme-color" content="#000000" /> */}
+        <meta name="theme-color" content="#ffffff" />
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="mobile-web-app-capable" content="yes" />
         <meta name="color-scheme" content="light" />
         <link rel="manifest" href="/manifest.json" />
       </head>     

@@ -9,7 +9,7 @@ export default function PageHeader({ title }: { title: string }) {
     <div className="flex items-center gap-2 mb-4">
       <button
         onClick={() => router.back()}
-        className="text-xl p-2 -ml-2 text-gray-900 hover:bg-gray-100 rounded-lg"
+        className="text-xl p-2 -ml-2 text-gray-900 rounded-full active:bg-gray-200 transition"
         aria-label="Go back"
       >
         ←
