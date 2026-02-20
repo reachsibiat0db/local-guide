@@ -12,7 +12,7 @@ const categories = [
 
 export default function Categories() {
   return (
-    <main className="min-h-screen bg-white pb-20">
+    <main className="min-h-screen bg-white border border-gray-100 pb-20">
       <div className="max-w-md mx-auto p-6">
         <PageHeader title="Categories" />
 
@@ -21,7 +21,7 @@ export default function Categories() {
             <Link
               key={cat}
               href={`/category/${cat}`}
-              className="bg-white shadow-sm rounded-2xl p-4 capitalize text-center"
+              className="bg-white border border-gray-100 shadow-sm rounded-2xl p-4 capitalize text-center"
             >
               {cat}
             </Link>

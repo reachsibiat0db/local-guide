@@ -19,6 +19,12 @@ export const metadata: Metadata = {
   title: "Local Guide",
   description: "Trusted local recommendations",
   manifest: "/manifest.json",
+  themeColor: "#ffffff",
+};
+
+export const viewport = {
+  themeColor: "#ffffff",
+  colorScheme: "light",
 };
 
 export default function RootLayout({
