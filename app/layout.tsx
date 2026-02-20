@@ -29,10 +29,11 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head>
-        <meta name="theme-color" content="#000000" />
+        {/* <meta name="theme-color" content="#000000" /> */}
+        <meta name="color-scheme" content="light" />
         <link rel="manifest" href="/manifest.json" />
       </head>     
-      <body className="bg-gray-50">
+      <body className="bg-white text-black">
         {children}
         <BottomNav />
       </body>
