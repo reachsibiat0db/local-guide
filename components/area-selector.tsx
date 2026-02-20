@@ -22,7 +22,7 @@ export default function AreaSelector() {
       <select
         value={area}
         onChange={(e) => changeArea(e.target.value)}
-        className="border rounded-lg px-3 py-2 text-sm"
+        className="border border-gray-300 bg-white text-gray-900 rounded-lg px-3 py-2 text-sm"
       >
         {AREAS.map((a) => (
           <option key={a.id} value={a.name}>
