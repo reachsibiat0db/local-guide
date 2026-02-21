@@ -8,7 +8,7 @@ export default function AddPlaceFAB() {
       href="https://docs.google.com/forms/d/e/1FAIpQLSdPIAvFsaQeKHwAJWAC33xvvqW3mtoMaGRhfGeXf8MTsUpjvg/viewform"
       target="_blank"
       className="
-        group fixed bottom-40 right-5
+        group fixed right-5
         bottom-[max(3.5rem,env(safe-area-inset-bottom))]  /* ⭐ mobile safe area */
 
         flex items-center justify-center
@@ -26,7 +26,7 @@ export default function AddPlaceFAB() {
     >
       {/* ICON (unchanged) */}
       <div className="flex items-center justify-center w-6 h-6">
-        <Plus size={28} viewBox="0 0 18 24" strokeWidth={2.5} />
+        <Plus size={28} viewBox="0 0 24 24" strokeWidth={2.5} />
       </div>
 
       {/* Label — desktop only */}
