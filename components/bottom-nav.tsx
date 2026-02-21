@@ -25,7 +25,7 @@ export default function BottomNav() {
         </Link>
         <Link href="/submit" className={linkClass("/submit")}>
           <span>➕</span>
-          Submit
+          Recommend
         </Link>
         <Link href="/about" className={linkClass("/about")}>
           <span>ℹ️</span>

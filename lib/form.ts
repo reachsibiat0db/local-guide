@@ -2,7 +2,7 @@ export const FORM_BASE =
   "https://docs.google.com/forms/d/e/1FAIpQLSdPIAvFsaQeKHwAJWAC33xvvqW3mtoMaGRhfGeXf8MTsUpjvg/viewform";
 
 export const FORM_FIELDS = {
-  area: "entry.1172303348",
+  area: "entry.1122349319",
   category: "entry.1393374049",
 };
 

@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import ReportBug from "@/components/report-bug";
 import BottomNav from "@/components/bottom-nav";
-
+import FAB from "@/components/fab";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 
@@ -44,7 +44,9 @@ export default function RootLayout({
       <body className="bg-white text-gray-900 antialiased">
         {children}
         <BottomNav />
+
         <ReportBug />
+        <FAB />        
       </body>
     </html>
   );
