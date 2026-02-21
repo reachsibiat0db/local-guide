@@ -9,25 +9,30 @@ export default function AddPlaceFAB() {
       target="_blank"
       className="
         group fixed bottom-40 right-5
+        bottom-[max(3.5rem,env(safe-area-inset-bottom))]  /* ⭐ mobile safe area */
+
         flex items-center justify-center
-        h-10 w-10 hover:w-auto
-        bg-gray-900 text-white
+        h-10 w-10 md:hover:w-auto   /* ⭐ hover expand only on desktop */
+
+        bg-emerald-900 text-white
         rounded-full
         shadow-lg
         transition-all duration-300
         px-3
+        active:scale-95
+
+        md:hover:shadow-xl md:hover:shadow-blue-500/25
       "
     >
-      {/* Centered + icon */}
-            {/* ICON WRAPPER (true center anchor) */}
+      {/* ICON (unchanged) */}
       <div className="flex items-center justify-center w-6 h-6">
         <Plus size={28} viewBox="0 0 18 24" strokeWidth={2.5} />
       </div>
-      
 
-      {/* Expanding label */}
+      {/* Label — desktop only */}
       <span
         className="
+          hidden md:inline-block   /* ⭐ hide on mobile */
           ml-2 whitespace-nowrap
           max-w-0 overflow-hidden
           group-hover:max-w-[140px]

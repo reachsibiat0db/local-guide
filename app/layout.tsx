@@ -4,6 +4,8 @@ import BottomNav from "@/components/bottom-nav";
 import FAB from "@/components/fab";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
+import SpeedDialFAB from "@/components/SpeedDialFAB";
+
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -14,6 +16,7 @@ const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
   subsets: ["latin"],
 });
+
 
 export const metadata: Metadata = {
   title: "Local Guide",
