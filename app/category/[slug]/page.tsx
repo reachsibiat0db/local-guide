@@ -6,6 +6,7 @@ import { Listing } from "@/types/listing";
 import { useParams } from "next/navigation";
 import EmptyState from "@/components/empty-state";
 import { CATEGORIES } from "@/lib/categories";
+import { ChevronRight, ChevronDown } from "lucide-react";
 
 export default function CategoryPage() {
   const [area, setArea] = useState("kolathur");
@@ -21,7 +22,6 @@ export default function CategoryPage() {
   const reviews: Listing[] = DATA[area]?.[slug] || [];
   const category = CATEGORIES.find((c) => c.slug === slug);
 
-  // 🔹 GROUP REVIEWS BY PLACE NAME
   const grouped = reviews.reduce<Record<string, Listing[]>>((acc, review) => {
     if (!acc[review.name]) acc[review.name] = [];
     acc[review.name].push(review);
@@ -59,15 +59,24 @@ export default function CategoryPage() {
                 onClick={() =>
                   setExpanded(expanded === placeName ? null : placeName)
                 }
-                className={`p-4 rounded-xl border transition cursor-pointer mb-4
+                className={`p-4 rounded-xl border transition cursor-pointer active:scale-[0.99] mb-4
                   ${
                     isNegativeDominant
                       ? "bg-red-50 border-red-200 shadow-none"
                       : "bg-white border-gray-200 shadow-sm"
                   }`}
               >
-                {/* Place Name */}
-                <h3 className="font-semibold text-black">{placeName}</h3>
+                {/* Header Row (Name + Chevron) */}
+                <div className="flex justify-between items-center">
+                  <h3 className="font-semibold text-black">
+                    {placeName}
+                  </h3>
+                  {expanded === placeName ? (
+                    <ChevronDown size={18} className="text-gray-400" />
+                  ) : (
+                    <ChevronRight size={18} className="text-gray-400" />
+                  )}
+                </div>
 
                 {/* Aggregated Info */}
                 <div className="text-sm mt-2 flex gap-4 items-center text-gray-600">
