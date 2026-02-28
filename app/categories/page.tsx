@@ -1,14 +1,7 @@
 import Link from "next/link";
 import PageHeader from "@/components/page-header";
+import { CATEGORIES } from "@/lib/categories";
 
-
-const categories = [
-  "restaurants",
-  "salons",
-  "electricians",
-  "internet",
-  "supermarket",
-];
 
 export default function Categories() {
   return (
@@ -17,13 +10,13 @@ export default function Categories() {
         <PageHeader title="Categories" />
 
         <div className="grid grid-cols-2 gap-4">
-          {categories.map((cat) => (
+          {CATEGORIES.map((cat) => (
             <Link
-              key={cat}
-              href={`/category/${cat}`}
-              className="bg-white border border-gray-200 rounded-2xl p-4 capitalize text-center text-gray-900 font-semibold active:scale-95 transition"
+              key={cat.slug}
+              href={`/category/${cat.slug}`}
+              className="bg-white border border-gray-200 rounded-2xl p-4 text-center text-gray-900 font-semibold active:scale-95 transition"
             >
-              {cat}
+              {cat.label}
             </Link>
           ))}
         </div>

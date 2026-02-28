@@ -1,0 +1,16 @@
+export const CATEGORIES = [
+  { slug: "carcare", label: "Car Care" },
+  { slug: "catering", label: "Catering" },
+  { slug: "cycle-repair", label: "Cycle Repair" },
+  { slug: "drivers", label: "Drivers" },
+  { slug: "electrician", label: "Electrician" },
+  { slug: "hospital", label: "Hospital" },
+  { slug: "internet", label: "Internet" },
+  { slug: "laundry", label: "Laundry" },
+  { slug: "milk-vendor", label: "Milk Vendor" },
+  { slug: "newspaper", label: "Newspaper" },
+  { slug: "restaurant", label: "Restaurant" },
+  { slug: "salon", label: "Salon" },
+  { slug: "schools", label: "Schools" },
+  { slug: "supermarket", label: "Supermarket" },
+];

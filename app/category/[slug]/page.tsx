@@ -5,37 +5,7 @@ import { DATA } from "@/lib/data";
 import { Listing } from "@/types/listing";
 import { useParams } from "next/navigation";
 import EmptyState from "@/components/empty-state";
-
-const data: Record<string, any[]> = {
-  electricians: [
-    {
-      name: "Raja Electrician",
-      note: "Recommended by multiple apartments. Fast response.",
-    },
-    {
-      name: "Kumar Electricals",
-      note: "Affordable and reliable.",
-    },
-  ],
-  restaurants: [
-    {
-      name: "Anjappar",
-      note: "Popular for family dining.",
-    },
-  ],
-  salons: [
-    {
-      name: "Green Trends",
-      note: "Budget friendly and clean.",
-    },
-  ],
-  internet: [
-    {
-      name: "ACT Fibernet",
-      note: "Fast and reliable in most apartments.",
-    },
-  ],
-};
+import { CATEGORIES } from "@/lib/categories";
 
 export default function CategoryPage() {
   const [area, setArea] = useState("kolathur");
@@ -47,11 +17,12 @@ export default function CategoryPage() {
   const params = useParams();
   const slug = params.slug as string;
   const items: Listing[] = DATA[area]?.[slug] || [];
-
+  const category = CATEGORIES.find((c) => c.slug === slug);
+  
   return (
     <main className="min-h-screen bg-white pb-20">
       <div className="max-w-md mx-auto px-4 pt-4 pb-6">
-        <PageHeader title={slug} />
+        <PageHeader title={category?.label || slug} />
         
           {items.length === 0 ? (
             <EmptyState />
