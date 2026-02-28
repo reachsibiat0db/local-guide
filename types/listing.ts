@@ -1,4 +1,6 @@
 export type Listing = {
-  name: string;
-  note: string;
+  name: string;        // place name
+  comment: string;
+  sentiment: "positive" | "negative" | "neutral";
+  createdAt: string;
 };

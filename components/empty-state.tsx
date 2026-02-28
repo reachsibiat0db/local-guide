@@ -4,7 +4,7 @@ import Link from "next/link";
 
 export default function EmptyState({
   message = "No listings yet.",
-  subtext = "Be the first to contribute 🙌",
+  subtext = "Be the first to Recommend 🙌",
   showCTA = true,
 }) {
   return (
