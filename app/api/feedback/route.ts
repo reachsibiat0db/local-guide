@@ -7,7 +7,6 @@ export async function POST(req: Request) {
   const feedback = await prisma.feedback.create({
     data: {
       placeId: body.placeId,
-      title: body.title,
       description: body.description,
       type: body.type,
       severity: body.severity,

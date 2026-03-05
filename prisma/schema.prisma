@@ -10,6 +10,7 @@ generator client {
 
 datasource db {
   provider = "postgresql"
+  url      = env("DATABASE_URL")
 }
 
 model Area {
@@ -41,19 +42,19 @@ model Place {
   category   Category @relation(fields: [categoryId], references: [id])
   feedbacks  Feedback[]
 
-  @@unique([name, areaId])
+  @@unique([name, areaId, categoryId]) // prevents duplicate places in same area
 }
 
 model Feedback {
   id          Int      @id @default(autoincrement())
   placeId     Int
-  title       String
   description String
 
   type        String
   severity    String
 
   createdAt   DateTime @default(now())
+  contact     String?
 
   place Place @relation(fields: [placeId], references: [id])
 }
