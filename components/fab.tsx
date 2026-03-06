@@ -5,8 +5,7 @@ import { Plus } from "lucide-react";
 export default function AddPlaceFAB() {
   return (
     <a
-      href="https://docs.google.com/forms/d/e/1FAIpQLSdPIAvFsaQeKHwAJWAC33xvvqW3mtoMaGRhfGeXf8MTsUpjvg/viewform"
-      target="_blank"
+      href="/add"
       className="
         group fixed right-5
         bottom-[max(3.5rem,env(safe-area-inset-bottom))]  /* ⭐ mobile safe area */

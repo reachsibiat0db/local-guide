@@ -12,6 +12,7 @@ export default function Categories() {
   const [query, setQuery] = useState("");
   const [popular, setPopular] = useState<string[]>([]);
   const [area, setArea] = useState("");
+  const [loadingPopular, setLoadingPopular] = useState(true)
   
 
   const filtered = CATEGORIES.filter((cat) =>
@@ -28,7 +29,6 @@ export default function Categories() {
 
   useEffect(() => {
     const saved = localStorage.getItem("area") || "";
-    console.log("AREA FOUND:", saved);
 
     setArea(saved);
 
@@ -38,6 +38,7 @@ export default function Categories() {
         .then((data) => {
           console.log("POPULAR:", data);
           setPopular(data);
+          setLoadingPopular(false)
         });
     }
   }, []);
@@ -78,13 +79,42 @@ export default function Categories() {
         </div>
 
         {/* Popular (hide while searching) */}
-        {!query && popularCategories.length > 0 && (
+        {!query && (
           <>
             <h2 className="text-sm font-semibold text-gray-500 mb-3">
               Popular
             </h2>
 
             <div className="grid grid-cols-2 gap-4 mb-6">
+
+              {loadingPopular && (
+                <>
+                  {[...Array(4)].map((_, i) => (
+                    <div
+                      key={i}
+                      className="h-14 flex items-center justify-center rounded-2xl bg-gray-100 border border-gray-200 text-sm text-gray-400 animate-pulse"
+                    >
+                      Loading...
+                    </div>
+                  ))}
+                </>
+              )}
+
+              {!loadingPopular &&
+                popularCategories.map((cat) => (
+                  <Link
+                    key={cat.slug}
+                    href={`/category/${cat.slug}`}
+                    className="bg-gray-100 border border-gray-200 rounded-2xl p-4 text-center font-semibold"
+                  >
+                    {cat.label}
+                  </Link>
+                ))
+              }
+
+            </div>
+
+            {/* <div className="grid grid-cols-2 gap-4 mb-6">
               {popularCategories.map((cat) => (
                 <Link
                   key={cat.slug}
@@ -94,7 +124,7 @@ export default function Categories() {
                   {cat.label}
                 </Link>
               ))}
-            </div>
+            </div> */}
           </>
         )}
 
