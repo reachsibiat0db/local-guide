@@ -1,7 +1,6 @@
 
 import { prisma } from "@/lib/prisma"
 import AddForm from "@/components/AddForm"
-import { useRouter } from "next/navigation"
 
 export default async function AddPage() {
 
