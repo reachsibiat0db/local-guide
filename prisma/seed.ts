@@ -21,22 +21,22 @@ async function main() {
 
   // Seed Categories
   await prisma.category.createMany({
-    data: [
-      { name: "Electrician" },
-      { name: "Salon" },
-      { name: "Restaurant" },
-      { name: "Internet" },
-      { name: "Supermarket" },
-      { name: "Medicals" },
-      { name: "Laundry" },
-      { name: "Hospital" },
-      { name: "Newspaper" },
-      { name: "Catering" },
-      { name: "School" },
-      { name: "Car Care" },
-      { name: "Cycle Repair" },
-      { name: "Milk Vendor" },
-      { name: "Driver" }
+ data: [
+      { name: "Electrician",slug: "electrician"},
+      { name: "Salon",slug: "salon" },
+      { name: "Restaurant",slug: "restaurant" },
+      { name: "Internet",slug: "internet" },
+      { name: "Supermarket",slug: "supermarket" },
+      { name: "Medicals",slug: "medicals" },
+      { name: "Laundry",slug: "laundry" },
+      { name: "Hospital",slug: "hospital" },
+      { name: "Newspaper",slug: "news-paper" },
+      { name: "Catering",slug: "catering" },
+      { name: "School",slug: "school" },
+      { name: "Car Care",slug: "car-care" },
+      { name: "Cycle Repair",slug: "cycle-repair" },
+      { name: "Milk Vendor",slug: "milk-vendor" },
+      { name: "Driver",slug: "driver" }
     ],
     skipDuplicates: true
   })

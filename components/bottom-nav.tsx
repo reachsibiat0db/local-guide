@@ -1,37 +1,49 @@
-"use client";
+"use client"
 
-import Link from "next/link";
-import { usePathname } from "next/navigation";
+import Link from "next/link"
+import { usePathname } from "next/navigation"
+
+import {
+  HomeIcon,
+  Squares2X2Icon,
+  PlusCircleIcon,
+  InformationCircleIcon
+} from "@heroicons/react/24/outline"
 
 export default function BottomNav() {
-  const path = usePathname();
 
-  const linkClass = (href: string) =>
-    `flex flex-col items-center text-xs ${
-      path === href ? "text-black font-semibold" : "text-gray-400"
-    }`;
+  const pathname = usePathname()
+
+  const nav = [
+    { name: "Home", href: "/", icon: HomeIcon },
+    { name: "Categories", href: "/categories", icon: Squares2X2Icon },
+    { name: "Recommend", href: "/add", icon: PlusCircleIcon },
+    { name: "About", href: "/about", icon: InformationCircleIcon },
+  ]
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 shadow-[0_-2px_8px_rgba(0,0,0,0.04)]">
+    <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200">
       <div className="max-w-md mx-auto flex justify-around py-2">
-        <Link href="/" className={linkClass("/")}>
-          <span>🏠</span>
-          Home
-        </Link>
 
-        <Link href="/categories" className={linkClass("/categories")}>
-          <span>📂</span>
-          Categories
-        </Link>
-        <Link href="/add" className={linkClass("/submit")}>
-          <span>➕</span>
-          Recommend
-        </Link>
-        <Link href="/about" className={linkClass("/about")}>
-          <span>ℹ️</span>
-          About
-        </Link>
+        {nav.map((item) => {
+          const Icon = item.icon
+          const active = pathname === item.href
+
+          return (
+            <Link
+              key={item.name}
+              href={item.href}
+              className={`flex flex-col items-center text-xs ${
+                active ? "text-black" : "text-gray-400"
+              }`}
+            >
+              <Icon className="h-6 w-6 mb-1" />
+              {item.name}
+            </Link>
+          )
+        })}
+
       </div>
-    </nav>
-  );
+    </div>
+  )
 }

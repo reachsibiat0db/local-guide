@@ -45,7 +45,7 @@ export default function AddForm({ areas, categories }: Props) {
             clearTimeout(timer)
         }
     }
-  }, [showSuccess])
+  }, [showSuccess, router])
 
   return (
 
@@ -55,12 +55,16 @@ export default function AddForm({ areas, categories }: Props) {
         Add Recommendation
       </h1>
       {showSuccess && (
-        <div className={`bg-green-100 text-green-700 p-3 rounded mb-4 transition-opacity duration-500 ${
+        <div
+            className={`fixed top-6 right-6 z-50 transition-opacity duration-500 ${
             fadeOut ? "opacity-0" : "opacity-100"
-        }`}>
-            Recommendation submitted successfully ✅
+            }`}
+        >
+            <div className="bg-green-500 text-white px-4 py-3 rounded-lg shadow-lg">
+             Submitted successfully
+            </div>
         </div>
-      )}
+        )}
       <form action="/api/recommendation" method="POST" className="space-y-5">
 
         {/* Area + Category */}

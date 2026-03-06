@@ -7,10 +7,17 @@ import { RECENT } from "@/lib/recent";
 
 export default function Home() {
   const [area, setArea] = useState("");
+  const [recent, setRecent] = useState<any[]>([]);
 
   useEffect(() => {
     const saved = localStorage.getItem("area") || "";
     setArea(saved);
+
+    if (saved) {
+      fetch(`/api/recent?area=${saved}`)
+        .then(res => res.json())
+        .then(data => setRecent(data));
+    }
   }, []);
 
   return (
@@ -41,23 +48,26 @@ export default function Home() {
         </div>
 
         {/* 🔥 Recently Added Section */}
-        {area && RECENT[area]?.length > 0 && (
+
+
+        {area && recent.length > 0 && (
           <div className="mt-8">
             <h2 className="text-sm font-semibold text-gray-500 mb-2">
               🔥 Recently added in {area}
             </h2>
 
             <div className="space-y-2">
-              {RECENT[area].map((item, i) => (
-                <div
-                  key={i}
-                  className="bg-white rounded-xl p-3 shadow-sm text-sm"
+              {recent.map((item) => (
+                <Link
+                  key={item.id}
+                  href={`/place/${item.id}`}
+                  className="block bg-white rounded-xl p-3 shadow-sm text-sm hover:bg-gray-50"
                 >
                   <div className="font-semibold text-black">{item.name}</div>
                   <div className="text-gray-400 text-xs">
-                    {item.category}
+                    {item.category.name}
                   </div>
-                </div>
+                </Link>
               ))}
             </div>
           </div>
