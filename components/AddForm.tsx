@@ -1,4 +1,6 @@
 "use client"
+import { Suspense } from "react";
+
 
 import { useState, useEffect } from "react"
 import { useSearchParams, useRouter } from "next/navigation"
@@ -88,13 +90,13 @@ export default function AddForm({ areas, categories }: Props) {
         </div>
 
         {/* Place */}
-
-        <PlaceSearchDropdown
-          areaId={areaId}
-          categoryId={categoryId}
-          name="place"
-        />
-
+        <Suspense fallback={null}>
+            <PlaceSearchDropdown
+            areaId={areaId}
+            categoryId={categoryId}
+            name="place"
+            />
+        </Suspense>
         {/* Contact */}
 
         <div>

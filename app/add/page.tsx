@@ -1,6 +1,7 @@
 
 import { prisma } from "@/lib/prisma"
 import AddForm from "@/components/AddForm"
+import { Suspense } from "react"
 
 export default async function AddPage() {
 
@@ -13,9 +14,11 @@ export default async function AddPage() {
   })
 
   return (
-    <AddForm
-      areas={areas}
-      categories={categories}
-    />
+    <Suspense fallback={null}>
+      <AddForm
+        areas={areas}
+        categories={categories}
+      />
+    </Suspense>
   )
 }
