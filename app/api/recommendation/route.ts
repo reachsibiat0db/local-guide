@@ -1,6 +1,5 @@
 import { prisma } from "@/lib/prisma"
 import { NextRequest, NextResponse } from "next/server"
-import { redirect } from "next/navigation"
 
 export async function POST(request: NextRequest) {
 
@@ -34,16 +33,41 @@ export async function POST(request: NextRequest) {
     })
 
     placeId = newPlace.id
+
+    // create summary row for the place
+
+    await prisma.placeSummary.create({
+      data: {
+        placeId
+      }
+    })
   }
+
+  // TEMP sentiment (later will come from LLM)
+
+  let sentiment: "positive" | "negative"
+  sentiment = "positive"
 
   await prisma.feedback.create({
     data: {
       placeId,
       description,
-      type: "positive",
-      severity: "low",
+      sentiment,
       contact
     }
+  })
+
+  // update summary counts
+
+  const summaryUpdate = {
+    positiveCount: { increment: 1 },
+    totalReviews: { increment: 1 },
+    lastUpdated: new Date()
+  }
+
+  await prisma.placeSummary.update({
+    where: { placeId },
+    data: summaryUpdate
   })
 
   return NextResponse.redirect(new URL("/add?success=1", request.url))

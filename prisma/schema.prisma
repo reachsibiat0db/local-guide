@@ -42,7 +42,7 @@ model Place {
   area       Area     @relation(fields: [areaId], references: [id])
   category   Category @relation(fields: [categoryId], references: [id])
   feedbacks  Feedback[]
-
+  summary    PlaceSummary?
   @@unique([name, areaId, categoryId]) // prevents duplicate places in same area
 }
 
@@ -51,11 +51,23 @@ model Feedback {
   placeId     Int
   description String
 
-  type        String
-  severity    String
+  sentiment   String   // positive | negative
 
   createdAt   DateTime @default(now())
   contact     String?
+  place Place @relation(fields: [placeId], references: [id])
+}
+
+model PlaceSummary {
+  placeId Int @id
+
+  positiveCount Int @default(0)
+  negativeCount Int @default(0)
+  totalReviews  Int @default(0)
+
+  lastUpdated DateTime?
+
+  localsSay String?
 
   place Place @relation(fields: [placeId], references: [id])
 }

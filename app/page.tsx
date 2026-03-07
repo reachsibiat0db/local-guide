@@ -10,11 +10,13 @@ export default function Home() {
   const [recent, setRecent] = useState<any[]>([]);
 
   useEffect(() => {
-    const saved = localStorage.getItem("area") || "";
-    setArea(saved);
+    const savedArea = localStorage.getItem("area") || "";
+    const savedAreaId = localStorage.getItem("areaId") || "";
 
-    if (saved) {
-      fetch(`/api/recent?area=${saved}`)
+    setArea(savedArea);
+
+    if (savedAreaId) {
+      fetch(`/api/recent?areaId=${savedAreaId}`)
         .then(res => res.json())
         .then(data => setRecent(data));
     }

@@ -10,10 +10,8 @@ export async function POST(req: Request) {
     data: {
       placeId: body.placeId,
       description: body.description,
-      type: body.type,
-      severity: body.severity,
+      sentiment: body.type,
     },
   });
-
   return NextResponse.json(feedback);
 }

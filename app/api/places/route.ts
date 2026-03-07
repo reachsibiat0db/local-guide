@@ -5,36 +5,83 @@ export async function GET(request: NextRequest) {
 
   const { searchParams } = new URL(request.url)
 
-  const areaId = searchParams.get("areaId")
-  const categoryId = searchParams.get("categoryId")
-  const search = searchParams.get("search") // UPDATED: support search filtering
+  const areaIdParam = searchParams.get("areaId")
+  // const categoryId = searchParams.get("categoryId")
+  const categorySlug = searchParams.get("categorySlug")
+  const search = searchParams.get("search")
+  const categoryIdParam = searchParams.get("categoryId")
 
-  if (!areaId || !categoryId) {
+  if (!areaIdParam || !categoryIdParam) {
+  return NextResponse.json([])
+  }
+
+  const areaId = Number(areaIdParam)
+  const categoryId = Number(categoryIdParam)
+
+  if (Number.isNaN(areaId)) {
     return NextResponse.json([])
   }
-  
-  console.log("API called with:", { areaId, categoryId, search }) // UPDATED
+
+  if (!categoryIdParam) {
+    return NextResponse.json([])
+  }
+
+  // const category = await prisma.category.findUnique({
+  //   where: { slug: categorySlug }
+  // })
+
+  // if (!category) {
+  //   return NextResponse.json([])
+  // }
+
+  if (!areaId) {
+    return NextResponse.json([])
+  }
 
   const places = await prisma.place.findMany({
     where: {
-      areaId: Number(areaId),
-      categoryId: Number(categoryId),
-      ...(search && { // UPDATED: optional search filter
+      areaId: areaId,
+      categoryId: categoryId,
+      ...(search && {
         name: {
           contains: search,
           mode: "insensitive"
         }
       })
     },
-    orderBy: {
-      name: "asc"
+    orderBy: { name: "asc" },
+    include: {
+      summary: true,
+      feedbacks: {
+        orderBy: { createdAt: "desc" },
+        take: 3
+      }
     }
   })
 
-  console.log("Places from DB:", places)
+  const result = places.map((place) => ({
+    id: place.id,
+    name: place.name,
 
-  return NextResponse.json(places)
+    positiveCount: place.summary?.positiveCount ?? 0,
+    negativeCount: place.summary?.negativeCount ?? 0,
+    totalReviews: place.summary?.totalReviews ?? 0,
+    lastUpdated: place.summary?.lastUpdated ?? null,
+    localsSay: place.summary?.localsSay ?? null,
+
+    reviews: place.feedbacks.map((f) => ({
+      id: f.id,
+      description: f.description,
+      createdAt: f.createdAt
+    }))
+  }))
+
+  console.log("categoryId:", categoryId)
+  console.log("areaId:", areaId)
+
+  return NextResponse.json(result)
 }
+
 
 
 export async function POST(request: NextRequest) {
@@ -50,10 +97,8 @@ export async function POST(request: NextRequest) {
     )
   }
 
-  // normalize name
   const normalizedName = name.trim()
 
-  // check duplicate
   const existingPlace = await prisma.place.findFirst({
     where: {
       areaId: Number(areaId),
@@ -65,7 +110,6 @@ export async function POST(request: NextRequest) {
     }
   })
 
-  // if duplicate found → return existing place
   if (existingPlace) {
     return NextResponse.json({
       place: existingPlace,
@@ -73,7 +117,6 @@ export async function POST(request: NextRequest) {
     })
   }
 
-  // create new place
   const place = await prisma.place.create({
     data: {
       name: normalizedName,
@@ -82,8 +125,16 @@ export async function POST(request: NextRequest) {
     }
   })
 
+  // create summary row
+  await prisma.placeSummary.create({
+    data: {
+      placeId: place.id
+    }
+  })
+
   return NextResponse.json({
     place,
     duplicate: false
   })
 }
+

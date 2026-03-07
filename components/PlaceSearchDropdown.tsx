@@ -27,9 +27,11 @@ export default function PlaceSearchDropdown({ areaId, categoryId, name }: Props)
     fetch(`/api/places?areaId=${areaId}&categoryId=${categoryId}`)
       .then(res => res.json())
       .then(data => setPlaces(data))
-
   }, [areaId, categoryId])
 
+  console.log("AreaId" , areaId)
+  console.log("CategoryId" , places)
+  
   const filtered =
     query === ""
       ? places
