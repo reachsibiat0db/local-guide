@@ -1,5 +1,6 @@
 import { prisma } from "@/lib/prisma"
 import { NextRequest, NextResponse } from "next/server"
+import { analyzeReview } from "@/lib/ai/analyzeReview"
 
 export async function POST(request: NextRequest) {
 
@@ -11,7 +12,8 @@ export async function POST(request: NextRequest) {
 
   const description = String(formData.get("description"))
   const contact = String(formData.get("contact") || "")
-
+  const ai = await analyzeReview(description)
+  console.log(ai)
   let placeId: number
 
   // check if numeric id (existing place)
@@ -45,8 +47,7 @@ export async function POST(request: NextRequest) {
 
   // TEMP sentiment (later will come from LLM)
 
-  let sentiment: "positive" | "negative"
-  sentiment = "positive"
+  const sentiment = ai.sentiment as "positive" | "negative" | "mixed"
 
   await prisma.feedback.create({
     data: {
@@ -59,10 +60,17 @@ export async function POST(request: NextRequest) {
 
   // update summary counts
 
-  const summaryUpdate = {
-    positiveCount: { increment: 1 },
+  const summaryUpdate: any  = {
     totalReviews: { increment: 1 },
     lastUpdated: new Date()
+  }
+
+  if (sentiment === "positive") {
+    summaryUpdate.positiveCount = { increment: 1 }
+  }
+
+  if (sentiment === "negative") {
+    summaryUpdate.negativeCount = { increment: 1 }
   }
 
   await prisma.placeSummary.update({
