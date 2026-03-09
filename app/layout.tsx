@@ -19,7 +19,7 @@ const geistMono = Geist_Mono({
 
 
 export const metadata: Metadata = {
-  title: "Local Guide",
+  title: "TownTrust",
   description: "Trusted local recommendations",
   manifest: "/manifest.json",
   // themeColor: "#ffffff",

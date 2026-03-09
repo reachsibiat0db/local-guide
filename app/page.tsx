@@ -25,18 +25,25 @@ export default function Home() {
   return (
     <main className="min-h-screen bg-white pb-20">
       <div className="max-w-md mx-auto px-4 pt-4 pb-6">
-        {/* Header */}
-        <AreaSelector />
 
-        <h1 className="text-xl font-semibold text-gray-900">
-          Local Guide
-        </h1>
-        <p className="text-gray-500 mt-1">
-          Trusted places curated for locals
-        </p>
+
+        <div className="space-y-2">
+          <h1 className="text-3xl font-bold tracking-tight">
+            <span className="text-gray-900">Town</span>
+            <span className="text-black">Trust</span>
+          </h1>
+
+          <p className="text-sm italic text-gray-500">
+            Find places your town trusts.
+          </p>
+        </div>
+        {/* Header */}
+        <div className="mt-4">
+          <AreaSelector />
+        </div>        
 
         {/* Hero Card */}
-        <div className="mt-6 p-5 bg-white rounded-2xl shadow-sm">
+        <div className="mt-6 p-5 bg-gray-50 rounded-2xl border border-gray-100">
           <p className="text-sm text-gray-500 mt-1">
             Discover trusted salons, electricians, food spots and more.
           </p>
@@ -53,7 +60,7 @@ export default function Home() {
 
 
         {area && recent.length > 0 && (
-          <div className="mt-8">
+          <div className="mt-8 pt-6 border-t border-gray-100">
             <h2 className="text-sm font-semibold text-gray-500 mb-2">
               🔥 Recently added in {area}
             </h2>

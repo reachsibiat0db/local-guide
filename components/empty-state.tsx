@@ -14,7 +14,7 @@ export default function EmptyState({
 
       {showCTA && (
         <Link
-          href="/submit"
+          href="/add"
           className="inline-block mt-5 px-4 py-2 text-sm font-medium bg-gray-900 text-white hover:bg-black rounded-lg"
         >
           Add a recommendation
