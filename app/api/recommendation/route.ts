@@ -1,6 +1,7 @@
 import { prisma } from "@/lib/prisma"
 import { NextRequest, NextResponse } from "next/server"
 import { analyzeReview } from "@/lib/ai/analyzeReview"
+import { generateLocalsSay } from "@/lib/ai/generateLocalsSay"
 
 export async function POST(request: NextRequest) {
 
@@ -62,7 +63,8 @@ export async function POST(request: NextRequest) {
 
   const summaryUpdate: any  = {
     totalReviews: { increment: 1 },
-    lastUpdated: new Date()
+    lastUpdated: new Date(),
+    localsSay: ai.summary
   }
 
   if (sentiment === "positive") {
@@ -76,6 +78,28 @@ export async function POST(request: NextRequest) {
   await prisma.placeSummary.update({
     where: { placeId },
     data: summaryUpdate
+  })
+
+  
+  const recentReviews = await prisma.feedback.findMany({
+    where: { placeId },
+    orderBy: { createdAt: "desc" },
+    take: 5,
+    select: {
+      description: true
+    }
+  })
+  const reviewText = recentReviews
+  .map((r, i) => `${i + 1}. ${r.description}`)
+  .join("\n")
+
+  const localsSay = await generateLocalsSay(reviewText)
+
+  await prisma.placeSummary.update({
+    where: { placeId },
+    data: {
+      localsSay
+    }
   })
 
   return NextResponse.redirect(new URL("/add?success=1", request.url))

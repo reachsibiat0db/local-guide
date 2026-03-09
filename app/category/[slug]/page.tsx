@@ -5,6 +5,7 @@ import EmptyState from "@/components/empty-state";
 // import { CATEGORIES } from "@/lib/categories";
 import { ChevronRight, ChevronDown } from "lucide-react";
 import { useParams } from "next/navigation";
+import AreaSelector from "@/components/area-selector";
 
 type Review = {
   id: number;
@@ -17,6 +18,7 @@ type Place = {
   name: string;
   positiveCount: number;
   negativeCount: number;
+  neutralCount: number;
   totalReviews: number;
   lastUpdated: string | null;
   localsSay: string | null;
@@ -27,6 +29,7 @@ export default function CategoryPage() {
 
   const [areaId, setAreaId] = useState<string | null>(null)
   const [expanded, setExpanded] = useState<number | null>(null);
+  const [expandedLocalsSay, setExpandedLocalsSay] = useState<number | null>(null);
   const [places, setPlaces] = useState<Place[]>([]);
   const [loading, setLoading] = useState(true);
   const [categoryLabel, setCategoryLabel] = useState<string>(""); // NEW
@@ -110,10 +113,12 @@ export default function CategoryPage() {
     };
   }
 
+
+
   return (
     <main className="min-h-screen bg-white pb-20">
       <div className="max-w-md mx-auto px-4 pt-4 pb-6">
-
+        <AreaSelector />
         <PageHeader title={categoryLabel || slug} />
 
           {loading ? (
@@ -158,6 +163,13 @@ export default function CategoryPage() {
             const isNegativeDominant =
               place.negativeCount > place.positiveCount;
 
+              const MAX_LENGTH = 60
+
+              const truncatedLocals =
+                place.localsSay && place.localsSay.length > MAX_LENGTH
+                  ? place.localsSay.slice(0, MAX_LENGTH) + "..."
+                  : place.localsSay
+
             return (
               <div
                 key={place.id}
@@ -192,6 +204,7 @@ export default function CategoryPage() {
 
                   <span>👍 {place.positiveCount}</span>
                   <span>👎 {place.negativeCount}</span>
+                  <span>😐 {place.neutralCount}</span>
                   <span>• {place.totalReviews} reviews</span>
 
                 </div>
@@ -211,35 +224,58 @@ export default function CategoryPage() {
 
                 {/* Locals Say */}
                 {place.localsSay && (
-                  <p className="text-sm text-gray-600 mt-2 italic">
-                    Locals say: {place.localsSay}
-                  </p>
+                  <div className="text-sm text-gray-600 mt-2 italic">
+                    <span>
+                      Locals say:{" "}
+                      {expandedLocalsSay === place.id
+                        ? place.localsSay
+                        : truncatedLocals}
+                    </span>
+
+                    {place.localsSay.length > MAX_LENGTH && (
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation()
+                          setExpandedLocalsSay(
+                            expandedLocalsSay === place.id ? null : place.id
+                          )
+                        }}
+                        className="ml-1 text-blue-600 text-xs"
+                      >
+                        {expandedLocalsSay === place.id ? "less" : "more"}
+                      </button>
+                    )}
+                  </div>
                 )}
 
                 {/* Expanded Reviews */}
                 {expanded === place.id && (
 
-                  <div className="mt-4 border-t pt-3 space-y-3">
+                  <div className="mt-4 border-t pt-3">
 
-                    {place.reviews.map((review) => (
+                    <div className="max-h-[200px] overflow-y-auto pr-2 space-y-3">
 
-                      <div key={review.id}>
+                      {place.reviews.map((review) => (
 
-                        <p className="text-sm text-gray-700">
-                          {review.description}
-                        </p>
+                        <div key={review.id}>
 
-                        <p className="text-xs text-gray-400 mt-1">
-                          {new Date(review.createdAt).toLocaleDateString()}
-                        </p>
+                          <p className="text-sm text-gray-700">
+                            {review.description}
+                          </p>
 
-                      </div>
+                          <p className="text-xs text-gray-400 mt-1">
+                            {new Date(review.createdAt).toLocaleDateString()}
+                          </p>
 
-                    ))}
+                        </div>
+
+                      ))}
+
+                    </div>
 
                   </div>
 
-                )}
+                )}                
 
               </div>
             );

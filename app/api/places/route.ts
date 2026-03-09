@@ -54,27 +54,38 @@ export async function GET(request: NextRequest) {
       summary: true,
       feedbacks: {
         orderBy: { createdAt: "desc" },
-        take: 3
+        take: 15
       }
     }
   })
 
-  const result = places.map((place) => ({
-    id: place.id,
-    name: place.name,
+  const result = places.map((place) => {
 
-    positiveCount: place.summary?.positiveCount ?? 0,
-    negativeCount: place.summary?.negativeCount ?? 0,
-    totalReviews: place.summary?.totalReviews ?? 0,
-    lastUpdated: place.summary?.lastUpdated ?? null,
-    localsSay: place.summary?.localsSay ?? null,
+    const positive = place.summary?.positiveCount ?? 0
+    const negative = place.summary?.negativeCount ?? 0
+    const total = place.summary?.totalReviews ?? 0
+    const neutral = total - positive - negative
 
-    reviews: place.feedbacks.map((f) => ({
-      id: f.id,
-      description: f.description,
-      createdAt: f.createdAt
-    }))
-  }))
+    return {
+      id: place.id,
+      name: place.name,
+
+      positiveCount: positive,
+      negativeCount: negative,
+      neutralCount: neutral,
+      totalReviews: total,
+
+      lastUpdated: place.summary?.lastUpdated ?? null,
+      localsSay: place.summary?.localsSay ?? null,
+
+      reviews: place.feedbacks.map((f) => ({
+        id: f.id,
+        description: f.description,
+        createdAt: f.createdAt
+      }))
+    }
+
+  })
 
   console.log("categoryId:", categoryId)
   console.log("areaId:", areaId)

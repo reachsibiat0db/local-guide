@@ -1,6 +1,7 @@
 import PageHeader from "@/components/page-header";
 import CategoriesClient from "./categories-client";
 import { prisma } from "@/lib/prisma";
+import AreaSelector from "@/components/area-selector";
 
 export const revalidate = 3600; // ISR - revalidate every 1 hour
 
@@ -14,7 +15,8 @@ export default async function Categories() {
   return (
     <main className="min-h-screen bg-white border border-gray-100 pb-20">
       <div className="max-w-md mx-auto px-4 pt-4 pb-6">
-
+        {/* Header */}
+        <AreaSelector />        
         <PageHeader title="Categories" />
 
         <CategoriesClient categories={categories} />

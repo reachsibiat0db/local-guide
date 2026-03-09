@@ -7,6 +7,7 @@ type Props = {
   areaId: string
   categoryId: string
   name: string
+  onChange?: (name: string) => void
 }
 
 type Place = {
@@ -14,7 +15,7 @@ type Place = {
   name: string
 }
 
-export default function PlaceSearchDropdown({ areaId, categoryId, name }: Props) {
+export default function PlaceSearchDropdown({ areaId, categoryId, name, onChange }: Props) {
 
   const [places, setPlaces] = useState<Place[]>([])
   const [query, setQuery] = useState("")
@@ -47,7 +48,13 @@ export default function PlaceSearchDropdown({ areaId, categoryId, name }: Props)
         Place *
       </label>
 
-      <Combobox value={selected} onChange={setSelected}>
+      <Combobox value={selected} onChange={(place: Place | null) => {
+        setSelected(place)
+        if (place) {
+          setQuery(place.name)
+          onChange?.(place.name)
+        }
+      }}>
 
         <div className="relative">
 
@@ -58,11 +65,11 @@ export default function PlaceSearchDropdown({ areaId, categoryId, name }: Props)
             placeholder="Search or add place"
           />
 
-          <input
+          {/* <input
             type="hidden"
             name={name}
             value={selected?.id || query}
-          />
+          /> */}
 
           <Combobox.Options className="absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-lg border bg-white shadow">
 
@@ -71,6 +78,7 @@ export default function PlaceSearchDropdown({ areaId, categoryId, name }: Props)
                 key={place.id}
                 value={place}
                 className="cursor-pointer px-3 py-2 hover:bg-gray-100"
+                
               >
                 {place.name}
               </Combobox.Option>

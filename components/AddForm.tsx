@@ -8,6 +8,7 @@ import { useSearchParams, useRouter } from "next/navigation"
 import SearchableDropdown from "./SearchableDropdown"
 import PlaceSearchDropdown from "./PlaceSearchDropdown"
 
+
 type Item = {
   id: number
   name: string
@@ -28,6 +29,8 @@ export default function AddForm({ areas, categories }: Props) {
   const [showSuccess, setShowSuccess] = useState(successParam === "1")
   const router = useRouter()
   const [fadeOut, setFadeOut] = useState(false)
+  const [place, setPlace] = useState("")
+  const [description, setDescription] = useState("")
 
   useEffect(() => {
     if (showSuccess) {
@@ -75,27 +78,31 @@ export default function AddForm({ areas, categories }: Props) {
 
           <SearchableDropdown
             items={areas}
-            label="Area"
+            label="Area*"
             name="areaId"
             onChange={(id) => setAreaId(id)}
           />
+          <input type="hidden" name="areaId" value={areaId} required />
 
           <SearchableDropdown
             items={categories}
-            label="Category"
+            label="Category*"
             name="categoryId"
             onChange={(id) => setCategoryId(id)}
           />
+          <input type="hidden" name="categoryId" value={categoryId} required />
 
         </div>
 
         {/* Place */}
         <Suspense fallback={null}>
-            <PlaceSearchDropdown
+        <PlaceSearchDropdown
             areaId={areaId}
             categoryId={categoryId}
             name="place"
-            />
+            onChange={(name: string) => setPlace(name)}
+        />
+        <input type="hidden" name="place" value={place} required />
         </Suspense>
         {/* Contact */}
 
@@ -123,6 +130,8 @@ export default function AddForm({ areas, categories }: Props) {
             name="description"
             required
             rows={4}
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}            
             className="w-full border rounded-lg px-3 py-2"
             placeholder="Describe your experience..."
           />
@@ -132,7 +141,11 @@ export default function AddForm({ areas, categories }: Props) {
 
         <button
           type="submit"
-          className="w-full bg-black text-white py-3 rounded-xl text-lg font-medium shadow"
+          disabled={!areaId || !categoryId || !place || !description.trim()}
+          className={`w-full py-3 rounded-xl text-lg font-medium shadow 
+          ${!areaId || !categoryId || !place || !description.trim()
+            ? "bg-gray-300 text-gray-500 cursor-not-allowed" 
+            : "bg-black text-white cursor-pointer"}`}
         >
           Submit Recommendation
         </button>
