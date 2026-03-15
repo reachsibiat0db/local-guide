@@ -11,8 +11,26 @@ export async function GET(request: NextRequest) {
   const search = searchParams.get("search")
   const categoryIdParam = searchParams.get("categoryId")
 
-  if (!areaIdParam || !categoryIdParam) {
-  return NextResponse.json([])
+  // NEW: allow global search when search query exists
+  if (search) {
+
+    const places = await prisma.place.findMany({
+      where: {
+        name: {
+          contains: search,
+          mode: "insensitive"
+        }
+      },
+      include: {
+        area: true
+      },
+      take: 10,
+      orderBy: {
+        name: "asc"
+      }
+    })
+
+    return NextResponse.json(places)
   }
 
   const areaId = Number(areaIdParam)

@@ -9,6 +9,7 @@ export async function POST(request: NextRequest) {
 
   const areaId = Number(formData.get("areaId"))
   const categoryId = Number(formData.get("categoryId"))
+  const placeIdInput = formData.get("placeId")
   const placeInput = String(formData.get("place"))
 
   const description = String(formData.get("description"))
@@ -17,12 +18,10 @@ export async function POST(request: NextRequest) {
   console.log(ai)
   let placeId: number
 
-  // check if numeric id (existing place)
+// check if existing place selected
 
-  if (!isNaN(Number(placeInput))) {
-
-    placeId = Number(placeInput)
-
+  if (placeIdInput) {
+    placeId = Number(placeIdInput)
   } else {
 
     // create new place

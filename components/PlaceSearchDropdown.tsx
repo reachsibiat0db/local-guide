@@ -1,44 +1,46 @@
 "use client"
-console.log("PlaceSearchDropdown rendered")
+
 import { Combobox } from "@headlessui/react"
 import { useEffect, useState } from "react"
 
 type Props = {
-  areaId: string
-  categoryId: string
   name: string
-  onChange?: (name: string) => void
+  onChange?: (name: string, exists?: boolean, placeId?: number) => void
 }
+
 
 type Place = {
   id: number
   name: string
+  area?: {
+    name: string
+  }
 }
 
-export default function PlaceSearchDropdown({ areaId, categoryId, name, onChange }: Props) {
+export default function PlaceSearchDropdown({ name, onChange }: Props) {
 
-  const [places, setPlaces] = useState<Place[]>([])
   const [query, setQuery] = useState("")
+  const [places, setPlaces] = useState<Place[]>([])
   const [selected, setSelected] = useState<Place | null>(null)
 
   useEffect(() => {
 
-    if (!areaId || !categoryId) return
+    if (query.length < 1) {
+      setPlaces([])
+      return
+    }
 
-    fetch(`/api/places?areaId=${areaId}&categoryId=${categoryId}`)
-      .then(res => res.json())
-      .then(data => setPlaces(data))
-  }, [areaId, categoryId])
+    const timer = setTimeout(() => {
 
-  console.log("AreaId" , areaId)
-  console.log("CategoryId" , places)
-  
-  const filtered =
-    query === ""
-      ? places
-      : places.filter((p) =>
-          p.name.toLowerCase().includes(query.toLowerCase())
-        )
+      fetch(`/api/places?search=${encodeURIComponent(query)}`)
+        .then(res => res.json())
+        .then(data => setPlaces(data))
+
+    }, 120)
+
+    return () => clearTimeout(timer)
+
+  }, [query])
 
   return (
 
@@ -48,46 +50,73 @@ export default function PlaceSearchDropdown({ areaId, categoryId, name, onChange
         Place *
       </label>
 
-      <Combobox value={selected} onChange={(place: Place | null) => {
-        setSelected(place)
-        if (place) {
-          setQuery(place.name)
-          onChange?.(place.name)
-        }
-      }}>
+      <Combobox
+        value={selected}
+        onChange={(place: Place | null) => {
+
+          setSelected(place)
+
+          if (!place) return
+
+          // NEW PLACE
+          if (place.id === -1) {
+            setQuery(place.name)
+            onChange?.(place.name, false, undefined)
+            return
+          }
+
+          // EXISTING PLACE
+          const fullName = place.area
+            ? `${place.name} — ${place.area.name}`
+            : place.name
+
+          setQuery(fullName)
+          onChange?.(fullName, true, place.id)
+        }}
+      >
 
         <div className="relative">
 
           <Combobox.Input
             className="w-full border rounded-lg px-3 py-2"
-            displayValue={(place: Place) => place?.name || query}
-            onChange={(e) => setQuery(e.target.value)}
-            placeholder="Search or add place"
+            displayValue={() => query}
+            onChange={(e) => {
+              setQuery(e.target.value)
+              setSelected(null)
+            }}
+            placeholder="Search place (e.g. Saravana Bhavan)"
           />
-
-          {/* <input
-            type="hidden"
-            name={name}
-            value={selected?.id || query}
-          /> */}
 
           <Combobox.Options className="absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-lg border bg-white shadow">
 
-            {filtered.map((place) => (
+            {places.map((place) => (
+
               <Combobox.Option
                 key={place.id}
                 value={place}
                 className="cursor-pointer px-3 py-2 hover:bg-gray-100"
-                
               >
+
                 {place.name}
+                {place.area && (
+                  <span className="text-gray-500 text-sm">
+                    {" "}— {place.area.name}
+                  </span>
+                )}
+
               </Combobox.Option>
+
             ))}
 
-            {filtered.length === 0 && query !== "" && (
-              <div className="px-3 py-2 text-gray-500">
-                No matching results — press Enter to create
-              </div>
+            {query !== "" && (
+
+            <Combobox.Option
+              value={{ id: -1, name: query }}
+              className="cursor-pointer px-3 py-2 border-t text-blue-600 hover:bg-gray-100"
+            >
+              + Add new place "{query}"
+            </Combobox.Option>
+
             )}
 
           </Combobox.Options>

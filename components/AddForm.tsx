@@ -1,13 +1,11 @@
 "use client"
-import { Suspense } from "react";
 
-
+import { Suspense } from "react"
 import { useState, useEffect } from "react"
 import { useSearchParams, useRouter } from "next/navigation"
 
 import SearchableDropdown from "./SearchableDropdown"
 import PlaceSearchDropdown from "./PlaceSearchDropdown"
-
 
 type Item = {
   id: number
@@ -19,36 +17,41 @@ type Props = {
   categories: Item[]
 }
 
-
-
 export default function AddForm({ areas, categories }: Props) {
+
   const searchParams = useSearchParams()
+  const router = useRouter()
+
+  const successParam = searchParams.get("success")
+
+  const [showSuccess, setShowSuccess] = useState(successParam === "1")
+  const [fadeOut, setFadeOut] = useState(false)
+
+  const [place, setPlace] = useState("")
+  const [placeExists, setPlaceExists] = useState<boolean | null>(null)
+  const [placeChosen, setPlaceChosen] = useState(false)
+
   const [areaId, setAreaId] = useState("")
   const [categoryId, setCategoryId] = useState("")
-  const successParam = searchParams.get("success")
-  const [showSuccess, setShowSuccess] = useState(successParam === "1")
-  const router = useRouter()
-  const [fadeOut, setFadeOut] = useState(false)
-  const [place, setPlace] = useState("")
   const [description, setDescription] = useState("")
+  const [placeId, setPlaceId] = useState<number | null>(null)
 
   useEffect(() => {
     if (showSuccess) {
 
-        const fadeTimer = setTimeout(() => {
-            setFadeOut(true)
-        }, 2500) // start fading before disappearing
+      const fadeTimer = setTimeout(() => {
+        setFadeOut(true)
+      }, 2500)
 
-        const timer = setTimeout(() => {
-            setShowSuccess(false)
-            // remove query param from URL
-            router.replace("/add")
-        }, 3000) // disappears after 3 seconds
+      const timer = setTimeout(() => {
+        setShowSuccess(false)
+        router.replace("/add")
+      }, 3000)
 
-        return () => {
-            clearTimeout(fadeTimer)
-            clearTimeout(timer)
-        }
+      return () => {
+        clearTimeout(fadeTimer)
+        clearTimeout(timer)
+      }
     }
   }, [showSuccess, router])
 
@@ -59,52 +62,71 @@ export default function AddForm({ areas, categories }: Props) {
       <h1 className="text-2xl font-semibold mb-4">
         Add Recommendation
       </h1>
+
       {showSuccess && (
         <div
-            className={`fixed top-6 right-6 z-50 transition-opacity duration-500 ${
+          className={`fixed top-6 right-6 z-50 transition-opacity duration-500 ${
             fadeOut ? "opacity-0" : "opacity-100"
-            }`}
+          }`}
         >
-            <div className="bg-green-500 text-white px-4 py-3 rounded-lg shadow-lg">
-             Submitted successfully
-            </div>
+          <div className="bg-green-500 text-white px-4 py-3 rounded-lg shadow-lg">
+            Submitted successfully
+          </div>
         </div>
-        )}
+      )}
+
       <form action="/api/recommendation" method="POST" className="space-y-5">
 
-        {/* Area + Category */}
+        {/* PLACE SEARCH */}
 
-        <div className="grid grid-cols-2 gap-4">
-
-          <SearchableDropdown
-            items={areas}
-            label="Area*"
-            name="areaId"
-            onChange={(id) => setAreaId(id)}
-          />
-          <input type="hidden" name="areaId" value={areaId} required />
-
-          <SearchableDropdown
-            items={categories}
-            label="Category*"
-            name="categoryId"
-            onChange={(id) => setCategoryId(id)}
-          />
-          <input type="hidden" name="categoryId" value={categoryId} required />
-
-        </div>
-
-        {/* Place */}
         <Suspense fallback={null}>
-        <PlaceSearchDropdown
-            areaId={areaId}
-            categoryId={categoryId}
+          <PlaceSearchDropdown
             name="place"
-            onChange={(name: string) => setPlace(name)}
-        />
-        <input type="hidden" name="place" value={place} required />
+            onChange={(name: string, exists?: boolean, id?: number) => {
+              setPlace(name)
+              console.log("Place selected:", name, exists)
+              setPlaceExists(exists ?? false)
+              setPlaceChosen(true)
+              setPlaceId(id ?? null)
+            }}
+          />
         </Suspense>
-        {/* Contact */}
+        {/* <div className="text-xs text-gray-400">
+          chosen: {String(placeChosen)} | exists: {String(placeExists)}
+        </div> */}
+        <input type="hidden" name="place" value={place} required />
+        <input type="hidden" name="placeId" value={placeId ?? ""} />
+        <input type="hidden" name="placeName" value={placeExists ? "" : place} />
+
+        {/* SHOW AREA + CATEGORY ONLY IF NEW PLACE */}
+
+        {placeChosen && placeExists === false && (
+
+          <div className="grid grid-cols-2 gap-4">
+
+            <SearchableDropdown
+              items={areas}
+              label="Area *"
+              name="areaId"
+              onChange={(id) => setAreaId(id)}
+            />
+
+            <input type="hidden" name="areaId" value={areaId} required />
+
+            <SearchableDropdown
+              items={categories}
+              label="Category *"
+              name="categoryId"
+              onChange={(id) => setCategoryId(id)}
+            />
+
+            <input type="hidden" name="categoryId" value={categoryId} required />
+
+          </div>
+
+        )}
+
+        {/* CONTACT */}
 
         <div>
           <label className="block text-sm font-medium mb-1">
@@ -119,7 +141,7 @@ export default function AddForm({ areas, categories }: Props) {
           />
         </div>
 
-        {/* Description */}
+        {/* DESCRIPTION */}
 
         <div>
           <label className="block text-sm font-medium mb-1">
@@ -131,21 +153,29 @@ export default function AddForm({ areas, categories }: Props) {
             required
             rows={4}
             value={description}
-            onChange={(e) => setDescription(e.target.value)}            
+            onChange={(e) => setDescription(e.target.value)}
             className="w-full border rounded-lg px-3 py-2"
             placeholder="Describe your experience..."
           />
         </div>
 
-        {/* Submit */}
+        {/* SUBMIT */}
 
         <button
           type="submit"
-          disabled={!areaId || !categoryId || !place || !description.trim()}
+          disabled={
+            !place ||
+            !description.trim() ||
+            (placeExists === false && (!areaId || !categoryId))
+          }
           className={`w-full py-3 rounded-xl text-lg font-medium shadow 
-          ${!areaId || !categoryId || !place || !description.trim()
-            ? "bg-gray-300 text-gray-500 cursor-not-allowed" 
-            : "bg-black text-white cursor-pointer"}`}
+          ${
+            !place ||
+            !description.trim() ||
+            (placeExists === false && (!areaId || !categoryId))
+              ? "bg-gray-300 text-gray-500 cursor-not-allowed"
+              : "bg-black text-white cursor-pointer"
+          }`}
         >
           Submit Recommendation
         </button>
