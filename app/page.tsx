@@ -69,7 +69,7 @@ export default function Home() {
               {recent.map((item) => (
                 <Link
                   key={item.id}
-                  href={`/place/${item.id}`}
+                  href={`/category/${item.category.slug}?placeId=${item.id}`}
                   className="block bg-white rounded-xl p-3 shadow-sm text-sm hover:bg-gray-50"
                 >
                   <div className="font-semibold text-black">{item.name}</div>

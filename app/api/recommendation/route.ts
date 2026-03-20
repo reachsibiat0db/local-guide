@@ -7,36 +7,46 @@ export async function POST(request: NextRequest) {
 
   const formData = await request.formData()
 
-  const areaId = Number(formData.get("areaId"))
-  const categoryId = Number(formData.get("categoryId"))
+  const areaIdRaw = formData.get("areaId")
+  const categoryIdRaw = formData.get("categoryId")
   const placeIdInput = formData.get("placeId")
-  const placeInput = String(formData.get("place"))
 
-  const description = String(formData.get("description"))
+  const placeInput = String(formData.get("place") || "")
+  const description = String(formData.get("description") || "")
   const contact = String(formData.get("contact") || "")
-  const ai = await analyzeReview(description)
-  console.log(ai)
+
+  const accept = request.headers.get("accept") || ""
+
   let placeId: number
 
-// check if existing place selected
-
+  // 🔥 EXISTING PLACE FLOW
   if (placeIdInput) {
+
     placeId = Number(placeIdInput)
+
   } else {
 
-    // create new place
+    const areaId = Number(areaIdRaw)
+    const categoryId = Number(categoryIdRaw)
 
+    // ❗ Safety check (avoid DB crash)
+    if (!areaId || !categoryId || !placeInput) {
+      return NextResponse.json(
+        { error: "Missing required fields" },
+        { status: 400 }
+      )
+    }
+
+    // 🔥 CREATE NEW PLACE
     const newPlace = await prisma.place.create({
       data: {
-        name: placeInput,
+        name: placeInput.trim(),
         areaId,
         categoryId
       }
     })
 
     placeId = newPlace.id
-
-    // create summary row for the place
 
     await prisma.placeSummary.create({
       data: {
@@ -45,10 +55,12 @@ export async function POST(request: NextRequest) {
     })
   }
 
-  // TEMP sentiment (later will come from LLM)
+  // 🔥 AI ANALYSIS
+  const ai = await analyzeReview(description)
 
   const sentiment = ai.sentiment as "positive" | "negative" | "mixed"
 
+  // 🔥 CREATE FEEDBACK
   await prisma.feedback.create({
     data: {
       placeId,
@@ -58,9 +70,8 @@ export async function POST(request: NextRequest) {
     }
   })
 
-  // update summary counts
-
-  const summaryUpdate: any  = {
+  // 🔥 UPDATE SUMMARY COUNTS
+  const summaryUpdate: any = {
     totalReviews: { increment: 1 },
     lastUpdated: new Date(),
     localsSay: ai.summary
@@ -79,7 +90,7 @@ export async function POST(request: NextRequest) {
     data: summaryUpdate
   })
 
-  
+  // 🔥 REGENERATE LOCALS SAY
   const recentReviews = await prisma.feedback.findMany({
     where: { placeId },
     orderBy: { createdAt: "desc" },
@@ -88,9 +99,10 @@ export async function POST(request: NextRequest) {
       description: true
     }
   })
+
   const reviewText = recentReviews
-  .map((r, i) => `${i + 1}. ${r.description}`)
-  .join("\n")
+    .map((r, i) => `${i + 1}. ${r.description}`)
+    .join("\n")
 
   const localsSay = await generateLocalsSay(reviewText)
 
@@ -101,5 +113,13 @@ export async function POST(request: NextRequest) {
     }
   })
 
+  // 🔥 DUAL RESPONSE HANDLING
+
+  // For Bottom Sheet (fetch)
+  if (accept.includes("application/json")) {
+    return NextResponse.json({ success: true })
+  }
+
+  // For Add Recommendation Page (form submit)
   return NextResponse.redirect(new URL("/add?success=1", request.url))
 }

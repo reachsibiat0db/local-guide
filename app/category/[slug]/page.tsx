@@ -2,10 +2,11 @@
 import { useEffect, useState } from "react";
 import PageHeader from "@/components/page-header";
 import EmptyState from "@/components/empty-state";
-// import { CATEGORIES } from "@/lib/categories";
 import { ChevronRight, ChevronDown } from "lucide-react";
 import { useParams } from "next/navigation";
 import AreaSelector from "@/components/area-selector";
+import { useSearchParams } from "next/navigation";
+import ReviewSheet from "@/components/ReviewSheet"
 
 type Review = {
   id: number;
@@ -32,11 +33,20 @@ export default function CategoryPage() {
   const [expandedLocalsSay, setExpandedLocalsSay] = useState<number | null>(null);
   const [places, setPlaces] = useState<Place[]>([]);
   const [loading, setLoading] = useState(true);
-  const [categoryLabel, setCategoryLabel] = useState<string>(""); // NEW
+  const [categoryLabel, setCategoryLabel] = useState<string>("");
   const [categoryId, setCategoryId] = useState<number | null>(null)
+
   const params = useParams();
   const slug = params.slug as string;
-  
+  const searchParams = useSearchParams()
+  const placeIdParam = searchParams.get("placeId")
+
+  const [selectedPlace, setSelectedPlace] = useState<{
+    id: number
+    name: string
+  } | null>(null)
+
+  // 🔥 Load category
   useEffect(() => {
     async function loadCategory() {
       const res = await fetch(`/api/categories`)
@@ -52,44 +62,46 @@ export default function CategoryPage() {
     loadCategory()
   }, [slug])
 
-
-  // useEffect(() => {
-  //   async function loadCategory() {
-  //     const res = await fetch(`/api/categories`);
-  //     const data = await res.json();
-
-  //     const found = data.find((c: any) => c.slug === slug);
-
-  //     if (found) {
-  //       setCategoryLabel(found.label);
-  //       console.log("Category Label:",categoryLabel)
-  //     }
-  //   }
-
-  //   loadCategory();
-  // }, [slug]);
-
+  // 🔥 Load area from localStorage
   useEffect(() => {
     const saved = localStorage.getItem("areaId");
-    console.log("Area:",saved)
     if (saved) setAreaId(saved);
-  }, []);
+  }, [])
 
+  // ✅ REUSABLE FUNCTION (important)
+  async function loadPlaces() {
+    if (!areaId || !categoryId) return
+
+    setLoading(true)
+
+    const res = await fetch(
+      `/api/places?areaId=${areaId}&categoryId=${categoryId}`
+    )
+
+    const data = await res.json()
+
+    setPlaces(data)
+    setLoading(false)
+  }
+
+  // 🔥 Call loadPlaces
   useEffect(() => {
-    if (!areaId || !categoryId) return; // prevents early call
+    loadPlaces()
+  }, [areaId, categoryId])
 
-    async function loadPlaces() {
-      setLoading(true); // added
-      const res = await fetch(
-        `/api/places?areaId=${areaId}&categoryId=${categoryId}`
-      );
-      const data = await res.json();
-      setPlaces(data);
-      setLoading(false); // added
+  // 🔥 Expand from query param
+  useEffect(() => {
+    if (placeIdParam) {
+      setExpanded(Number(placeIdParam))
     }
+  }, [placeIdParam, places])
 
-    loadPlaces();
-  }, [areaId, categoryId]);
+  function openReview(place: any) {
+    setSelectedPlace({
+      id: place.id,
+      name: place.name
+    })
+  }
 
   function getStatusMessage(pos: number, neg: number) {
 
@@ -113,45 +125,40 @@ export default function CategoryPage() {
     };
   }
 
-
-
   return (
     <main className="min-h-screen bg-white pb-20">
       <div className="max-w-md mx-auto px-4 pt-4 pb-6">
+
         <AreaSelector />
         <PageHeader title={categoryLabel || slug} />
 
-          {loading ? (
-            <div className="space-y-4 mt-4">
-              {[1,2,3].map((i) => (
-                <div
-                  key={i}
-                  className="p-4 rounded-xl border border-gray-200 bg-white shadow-sm animate-pulse"
-                >
-                  {/* Header row */}
-                  <div className="flex justify-between items-center mb-3">
-                    <div className="h-4 w-40 bg-gray-200 rounded"></div>
-                    <div className="h-4 w-4 bg-gray-200 rounded"></div>
-                  </div>
-
-                  {/* Stats row */}
-                  <div className="flex gap-4 mb-2">
-                    <div className="h-3 w-10 bg-gray-200 rounded"></div>
-                    <div className="h-3 w-10 bg-gray-200 rounded"></div>
-                    <div className="h-3 w-16 bg-gray-200 rounded"></div>
-                  </div>
-
-                  {/* Last updated */}
-                  <div className="h-3 w-24 bg-gray-200 rounded mb-2"></div>
-
-                  {/* Status */}
-                  <div className="h-3 w-32 bg-gray-200 rounded"></div>
+        {loading ? (
+          <div className="space-y-4 mt-4">
+            {[1,2,3].map((i) => (
+              <div
+                key={i}
+                className="p-4 rounded-xl border border-gray-200 bg-white shadow-sm animate-pulse"
+              >
+                <div className="flex justify-between items-center mb-3">
+                  <div className="h-4 w-40 bg-gray-200 rounded"></div>
+                  <div className="h-4 w-4 bg-gray-200 rounded"></div>
                 </div>
-              ))}
-            </div>
-          ) : places.length === 0 ? (
-            <EmptyState />
-          ) : (
+
+                <div className="flex gap-4 mb-2">
+                  <div className="h-3 w-10 bg-gray-200 rounded"></div>
+                  <div className="h-3 w-10 bg-gray-200 rounded"></div>
+                  <div className="h-3 w-16 bg-gray-200 rounded"></div>
+                </div>
+
+                <div className="h-3 w-24 bg-gray-200 rounded mb-2"></div>
+                <div className="h-3 w-32 bg-gray-200 rounded"></div>
+              </div>
+            ))}
+          </div>
+
+        ) : places.length === 0 ? (
+          <EmptyState />
+        ) : (
 
           places.map((place) => {
 
@@ -163,12 +170,12 @@ export default function CategoryPage() {
             const isNegativeDominant =
               place.negativeCount > place.positiveCount;
 
-              const MAX_LENGTH = 60
+            const MAX_LENGTH = 60
 
-              const truncatedLocals =
-                place.localsSay && place.localsSay.length > MAX_LENGTH
-                  ? place.localsSay.slice(0, MAX_LENGTH) + "..."
-                  : place.localsSay
+            const truncatedLocals =
+              place.localsSay && place.localsSay.length > MAX_LENGTH
+                ? place.localsSay.slice(0, MAX_LENGTH) + "..."
+                : place.localsSay
 
             return (
               <div
@@ -184,29 +191,45 @@ export default function CategoryPage() {
                   }`}
               >
 
-                {/* Header Row */}
+                {/* Header */}
                 <div className="flex justify-between items-center">
 
                   <h3 className="font-semibold text-black">
                     {place.name}
                   </h3>
 
-                  {expanded === place.id ? (
-                    <ChevronDown size={18} className="text-gray-400" />
-                  ) : (
-                    <ChevronRight size={18} className="text-gray-400" />
-                  )}
+                  <div className="flex items-center gap-2">
+
+                    {/* + Button */}
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation()
+                        openReview(place)
+                      }}
+                      className="w-7 h-7 rounded-full border border-gray-300 text-gray-600 
+                                flex items-center justify-center text-sm 
+                                hover:bg-gray-100 hover:text-black transition"
+                    >
+                      +
+                    </button>
+
+                    {/* Expand Icon */}
+                    {expanded === place.id ? (
+                      <ChevronDown size={18} className="text-gray-400" />
+                    ) : (
+                      <ChevronRight size={18} className="text-gray-400" />
+                    )}
+
+                  </div>
 
                 </div>
 
                 {/* Counts */}
                 <div className="text-sm mt-2 flex gap-4 items-center text-gray-600">
-
                   <span>👍 {place.positiveCount}</span>
                   <span>👎 {place.negativeCount}</span>
                   <span>😐 {place.neutralCount}</span>
                   <span>• {place.totalReviews} reviews</span>
-
                 </div>
 
                 {/* Last Updated */}
@@ -217,7 +240,7 @@ export default function CategoryPage() {
                     : "—"}
                 </p>
 
-                {/* Status Message */}
+                {/* Status */}
                 <p className={`text-xs mt-2 ${status.color}`}>
                   {status.text}
                 </p>
@@ -250,38 +273,39 @@ export default function CategoryPage() {
 
                 {/* Expanded Reviews */}
                 {expanded === place.id && (
-
                   <div className="mt-4 border-t pt-3">
-
                     <div className="max-h-[200px] overflow-y-auto pr-2 space-y-3">
 
                       {place.reviews.map((review) => (
-
                         <div key={review.id}>
-
                           <p className="text-sm text-gray-700">
                             {review.description}
                           </p>
-
                           <p className="text-xs text-gray-400 mt-1">
                             {new Date(review.createdAt).toLocaleDateString()}
                           </p>
-
                         </div>
-
                       ))}
 
                     </div>
-
                   </div>
-
-                )}                
+                )}
 
               </div>
             );
 
           })
+        )}
 
+        {/* 🔥 Review Sheet with refresh */}
+        {selectedPlace && (
+          <ReviewSheet
+            placeId={selectedPlace.id}
+            placeName={selectedPlace.name}
+            isOpen={!!selectedPlace}
+            onClose={() => setSelectedPlace(null)}
+            onSuccess={loadPlaces} // 🔥 KEY LINE
+          />
         )}
 
       </div>
